@@ -15,35 +15,14 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+--Disable built-in netrw explorer as per nvim-tree recommendations
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+
 -- Install and configure plugins
 require("lazy").setup({
-    {
-  "nvim-tree/nvim-tree.lua",
-  dependencies = {
-    "nvim-tree/nvim-web-devicons",
-  },
-  config = function()
-    require("nvim-tree").setup()
-  end,
-    },
-{
-  "nvim-lualine/lualine.nvim",
-  dependencies = { "nvim-tree/nvim-web-devicons" },
-  opts = {
-    options = {
-      theme = "auto",
-    },
-  },
-},
-  {
-    "nyoom-engineering/oxocarbon.nvim",
-    build = false,
-    priority = 1000,
-    config = function()
-      vim.opt.background = "dark"
-      vim.cmd.colorscheme("oxocarbon")
-    end,
-  },
+  { import = "plugins" }, --loads lua/plugins/*.lua
 }, {
 	rocks = { enabled = false },
 })
