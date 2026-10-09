@@ -65,6 +65,42 @@ end
 map('n', '<leader>o', '<cmd>NvimTreeToggle<cr>', { desc = "NvimTree" }) -- toggle NvimTree
 map('n', '<leader>a', '<cmd>AerialToggle<cr>', { desc = "Aerial" }) -- toggle Aerial
 
+-- Launch terminal & shortcuts
+local terminal_buf = nil
+local terminal_win = nil
+
+local function toggle_terminal()
+    -- Hide the terminal if it's visible
+    if terminal_win and vim.api.nvim_win_is_valid(terminal_win) then
+        vim.api.nvim_win_hide(terminal_win)
+        terminal_win = nil
+        return
+    end
+
+    -- Open bottom split
+    vim.cmd("botright 12split")
+    terminal_win = vim.api.nvim_get_current_win()
+
+    -- Reuse existing terminal buffer
+    if terminal_buf and vim.api.nvim_buf_is_valid(terminal_buf) then
+        vim.api.nvim_win_set_buf(terminal_win, terminal_buf)
+    else
+        vim.cmd("terminal")
+        terminal_buf = vim.api.nvim_get_current_buf()
+    end
+
+    -- Enter terminal input mode
+    vim.cmd("startinsert")
+end
+
+map("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal", })
+map("t", "<C-k>", [[<C-\><C-n><C-w>k]], { desc = "Terminal -> Editor", })
+map("n", "<leader>tj", "wincmd j", { desc = "Editor -> Terminal", })
+
+
+-- Escape terminal mode using Ctrl+\ followed by Ctrl+n
+-- Then you can use normal Neovim navigation.
+
 -- Resize tabs
 map('n', '<leader>+', ':vertical resize +5<cr>', { desc = "Vertical resize +5" }) -- increase VSplit
 map('n', '<leader>-', ':vertical resize -5<cr>', { desc = "Vertical resize -5" }) -- decrease VSplit
@@ -78,6 +114,11 @@ map('n', '<leader>bt', '<cmd>tabnew<cr>', { desc = "New Tab" }) -- new tab
 map('n', '<leader>br', '<cmd>BDelete hidden<cr>', { desc = "Close unused buffers" }) -- remove buffers not attached to tabs
 map('n', '<leader>bq', '<cmd>BDelete! this<cr>', { desc = "Close current buffer" }) -- close this tab, without closing the split
 map('n', '<Leader>b<Tab>', '<cmd>bnext<CR>', { desc = "Tab to next buffer" }) -- move to next buffer
+map("n", "<leader>el", function()
+    if vim.bo.filetype == "NvimTree" then
+        vim.cmd("wincmd p")
+    end
+end, { desc = "Tree → Editor" })
 
 -- Copy / Paste
 map("v", "p", '"_dP', { desc = "Paste without yanking" }) -- Paste over currently selected text without yanking it
