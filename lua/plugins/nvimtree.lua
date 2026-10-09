@@ -11,12 +11,27 @@ return {
       view = {
         width = 30,
       },
+      sync_root_with_cwd = true,
       renderer = {
         group_empty = true,
       },
       filters = {
         dotfiles = true,
       },
+      on_attach = function(bufnr)
+        local api = require("nvim-tree.api")
+
+        api.map.on_attach.default(bufnr)
+
+        vim.keymap.set("n", "<Tab>", function()
+            api.node.open.no_window_picker()
+            api.tree.open()
+        end, {
+            buffer = bufnr,
+            desc = "Open file and stay in tree",
+            silent = true,
+        })
+    end,
     },
     init = function()
       -- Open the tree on startup when Neovim was started without a file argument

@@ -1,6 +1,12 @@
 -- Use Space as the leader key
 vim.g.mapleader = " "
 
+-- Custom command binds
+vim.api.nvim_create_user_command("NVTT", "NvimTreeToggle", {})
+
+-- Adding mapping.lua
+require("mapping")
+
 -- Install lazy.nvim the first time Neovim starts
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
