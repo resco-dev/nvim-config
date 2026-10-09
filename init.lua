@@ -6,6 +6,8 @@ vim.api.nvim_create_user_command("NVTT", "NvimTreeToggle", {})
 
 -- Adding mapping.lua
 require("mapping")
+-- Adding OS dependancy Install init
+require("platform").setup()
 
 -- Install lazy.nvim the first time Neovim starts
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

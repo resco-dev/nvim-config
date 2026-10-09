@@ -72,11 +72,12 @@ map('n', '<leader>*', ':resize +5<cr>', { desc = "Resize +5" }) -- increase HSpl
 map('n', '<leader>_', ':resize -5<cr>', { desc = "Resize -5" }) -- decrease HSplit
 
 -- Tabs
-map('n', '<leader>t', '<cmd>tabnew<cr>', { desc = "New Tab" }) -- new tab
+map('n', '<leader>bt', '<cmd>tabnew<cr>', { desc = "New Tab" }) -- new tab
 
 -- Buffers
-map('n', '<leader>b', '<cmd>BDelete hidden<cr>', { desc = "Close unused buffers" }) -- remove buffers not attached to tabs
-map('n', '<leader>x', '<cmd>BDelete! this<cr>', { desc = "Close current buffer" }) -- close this tab, without closing the split
+map('n', '<leader>br', '<cmd>BDelete hidden<cr>', { desc = "Close unused buffers" }) -- remove buffers not attached to tabs
+map('n', '<leader>bq', '<cmd>BDelete! this<cr>', { desc = "Close current buffer" }) -- close this tab, without closing the split
+map('n', '<Leader>b<Tab>', '<cmd>bnext<CR>', { desc = "Tab to next buffer" }) -- move to next buffer
 
 -- Copy / Paste
 map("v", "p", '"_dP', { desc = "Paste without yanking" }) -- Paste over currently selected text without yanking it
@@ -96,7 +97,7 @@ map("v", ">", ">gv", noremap) -- ""
 
 -- Telescope
 map('n', '<leader>ff', '<cmd>Telescope find_files<cr>', { desc = "Telescope Find Files" })
-map('n', '<leader>fg', '<cmd>telescope live_grep<cr>', { desc = "Telescope Grep" })
+map('n', '<leader>fg', '<cmd>Telescope live_grep<cr>', { desc = "Telescope Grep" })
 map('n', '<leader>fb', '<cmd>Telescope buffers<cr>', { desc = "Telescope Buffers" })
 map('n', '<leader>fo', '<cmd>Telescope oldfiles<cr>', { desc = "Telescope MRU" })
 map('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', { desc = "Telescope Help" })
@@ -110,6 +111,15 @@ map('n', '<leader>fs', '<cmd>Telescope possession list<cr>', { desc = "Telescope
 map('n', '<leader>wn', '<cmd>WorkspacesOpen nvim<CR>', { desc = "Nvim config" })
 map('n', '<leader>wr', '<cmd>WorkspacesOpen Rust<CR>', { desc = "Rust folder" })
 map('n', '<leader>?', '<cmd>Cheatsheet<cr>', { desc = "Cheatsheet" })
+map("n", "<leader>ws", function()
+  local path = vim.fn.getcwd()
+
+  vim.ui.input({ prompt = "Workspace name: " }, function(name)
+    if name and name ~= "" then
+      require("workspaces").add(path, name)
+    end
+  end)
+end, { desc = "Save current workspace" })
 
 -- Yanky
 map("n", "p", "<Plug>(YankyPutAfter)", { desc = "Yanky put after" })
