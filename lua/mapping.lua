@@ -119,6 +119,7 @@ map("n", "<leader>el", function()
         vim.cmd("wincmd p")
     end
 end, { desc = "Tree → Editor" })
+map('n', "<leader>h", "<cmd>NvimTreeFocus<cr>", { desc = "Focus file tree", silent = true,})
 
 -- Copy / Paste
 map("v", "p", '"_dP', { desc = "Paste without yanking" }) -- Paste over currently selected text without yanking it
@@ -149,8 +150,9 @@ map('n', '<leader>fs', '<cmd>Telescope possession list<cr>', { desc = "Telescope
 
 
 -- Workspaces
-map('n', '<leader>wn', '<cmd>WorkspacesOpen nvim<CR>', { desc = "Nvim config" })
+map('n', '<leader>wv', '<cmd>WorkspacesOpen nvim<CR>', { desc = "Nvim config" })
 map('n', '<leader>wr', '<cmd>WorkspacesOpen Rust<CR>', { desc = "Rust folder" })
+map('n', '<leader>wn', '<cmd>WorkspacesOpen notes<CR>', { desc = "Notes folder"})
 map('n', '<leader>?', '<cmd>Cheatsheet<cr>', { desc = "Cheatsheet" })
 map("n", "<leader>ws", function()
   local path = vim.fn.getcwd()
