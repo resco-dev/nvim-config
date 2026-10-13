@@ -12,6 +12,8 @@ return {
     end,
 
     opts = {
+        silent = true,
+        load_silent = true,
         autosave = {
             current = true,
             on_load = false,
