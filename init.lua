@@ -1,8 +1,20 @@
 -- Use Space as the leader key
 vim.g.mapleader = " "
 
+-- Change :q to close buffer without killing the pane
+vim.cmd([[ cnoreabbrev <expr> q (getcmdtype() == ':' && getcmdline() ==# 'q') ? 'BufferClose' : 'q' ]])
+-- Change :wq to close & save without closing pane
+vim.api.nvim_create_user_command("WriteClose", function() vim.cmd("write") vim.cmd("BufferClose") end, {})
+vim.cmd([[ cnoreabbrev <expr> wq (getcmdtype() == ':' && getcmdline() ==# 'wq') ? 'WriteClose' : 'wq' ]])
+
+-- Ignore terminal inside barbar
+vim.api.nvim_create_autocmd("TermOpen", { group = vim.api.nvim_create_augroup("HideTerminalBuffers", { clear = true, }), callback = function(args) vim.bo[args.buf].buflisted = false end, })
+
 -- Custom command binds
 vim.api.nvim_create_user_command("NVTT", "NvimTreeToggle", {})
+
+-- Ignore terminal & split for session saving
+vim.opt.sessionoptions:remove("terminal")
 
 -- Adding mapping.lua
 require("mapping")

@@ -72,8 +72,10 @@ local terminal_win = nil
 local function toggle_terminal()
     -- Hide the terminal if it's visible
     if terminal_win and vim.api.nvim_win_is_valid(terminal_win) then
-        vim.api.nvim_win_hide(terminal_win)
+        vim.api.nvim_win_close(terminal_win, true)
+        vim.api.nvim_buf_delete(terminal_buf, { force = true })
         terminal_win = nil
+        terminal_buf = nil
         return
     end
 
@@ -109,11 +111,13 @@ map('n', '<leader>_', ':resize -5<cr>', { desc = "Resize -5" }) -- decrease HSpl
 
 -- Tabs
 map('n', '<leader>bt', '<cmd>tabnew<cr>', { desc = "New Tab" }) -- new tab
+map('n', "<S-Tab>", "<cmd>wincmd w<cr>", { desc = "Next pane", silent = true,})
+map('t', "<S-Tab>", [[<C-\><C-n><C-w>w]], { desc = "Next pane (Typing)", silent = true,})
 
 -- Buffers
 map('n', '<leader>br', '<cmd>BDelete hidden<cr>', { desc = "Close unused buffers" }) -- remove buffers not attached to tabs
 map('n', '<leader>bq', '<cmd>BDelete! this<cr>', { desc = "Close current buffer" }) -- close this tab, without closing the split
-map('n', '<Leader>b<Tab>', '<cmd>bnext<CR>', { desc = "Tab to next buffer" }) -- move to next buffer
+map('n', '<Leader><Tab>', '<cmd>bnext<CR>', { desc = "Tab to next buffer" }) -- move to next buffer
 map("n", "<leader>el", function()
     if vim.bo.filetype == "NvimTree" then
         vim.cmd("wincmd p")
