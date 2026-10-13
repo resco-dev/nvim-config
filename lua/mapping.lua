@@ -65,7 +65,11 @@ end
 map('n', '<leader>o', '<cmd>NvimTreeToggle<cr>', { desc = "NvimTree" }) -- toggle NvimTree
 map('n', '<leader>a', '<cmd>AerialToggle<cr>', { desc = "Aerial" }) -- toggle Aerial
 
--- Launch terminal & shortcuts
+-- Launch terminal & shortcuts---
+-- Rebind doubletab esp to exist terminal typing
+vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { noremap = true, silent = true, })
+
+
 local terminal_buf = nil
 local terminal_win = nil
 

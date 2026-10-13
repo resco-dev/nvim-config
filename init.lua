@@ -18,8 +18,6 @@ vim.opt.sessionoptions:remove("terminal")
 
 -- Adding mapping.lua
 require("mapping")
--- Adding OS dependancy Install init
-require("platform").setup()
 
 -- Install lazy.nvim the first time Neovim starts
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
