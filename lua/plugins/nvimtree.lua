@@ -35,14 +35,21 @@ return {
     },
     init = function()
       -- Open the tree on startup when Neovim was started without a file argument
-      vim.api.nvim_create_autocmd("VimEnter", {
-        callback = function()
-          if vim.fn.argc() == 0 then
-            require("nvim-tree.api").tree.open()
-          end
-        end,
-        once = true,
-      })
+
+        vim.api.nvim_create_autocmd("VimEnter", {
+            once = true,
+            callback = function()
+                if vim.fn.argc() ~= 0 then
+                    return
+                end
+
+                local tree = require("nvim-tree.api").tree
+
+                if not tree.is_visible() then
+                    tree.toggle({ focus = false })
+                end
+            end,
+        })
     end,
   },
 }

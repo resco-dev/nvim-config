@@ -10,5 +10,12 @@ return {
         })
 
         vim.cmd.colorscheme("dark-2026")
+
+        -- Rust / LSP inlay hints
+        vim.api.nvim_set_hl(0, "LspInlayHint", {
+            fg = "#808080",
+            bg = "NONE",
+            italic = true,
+        })
     end,
 }
