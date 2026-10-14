@@ -64,6 +64,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
+vim.opt.softtabstop = -1
 
 -- Search as you type; ignore case unless you use a capital letter
 vim.opt.incsearch = true

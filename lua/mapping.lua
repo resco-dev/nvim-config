@@ -103,10 +103,6 @@ map("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal", })
 map("t", "<C-k>", [[<C-\><C-n><C-w>k]], { desc = "Terminal -> Editor", })
 map("n", "<leader>tj", "wincmd j", { desc = "Editor -> Terminal", })
 
-
--- Escape terminal mode using Ctrl+\ followed by Ctrl+n
--- Then you can use normal Neovim navigation.
-
 -- Resize tabs
 map('n', '<leader>+', ':vertical resize +5<cr>', { desc = "Vertical resize +5" }) -- increase VSplit
 map('n', '<leader>-', ':vertical resize -5<cr>', { desc = "Vertical resize -5" }) -- decrease VSplit

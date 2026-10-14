@@ -17,6 +17,8 @@ return {
                         "workspace-" .. current,
                         { no_confirm = true }
                     )
+                    -- Remember current workspace expanded folders
+                    require("tree_state").save()
                 end
             end,
 
@@ -32,11 +34,21 @@ return {
                     session.load(session_name)
                 end
 
-                -- Open the file explorer
-                require("nvim-tree.api").tree.open({
-                    path = path,
-                    focus = false,
-                })
+                -- Open the file explorer if it isn't already open
+                local tree = require("nvim-tree.api").tree
+
+                if not tree.is_visible() then
+                    tree.open({
+                        path = path,
+                        focus = false,
+                    })
+                end
+
+                -- Always set the tree root to the workspace directory
+                tree.change_root(path)
+
+                -- Restore previously expanded folders
+                require("tree_state").restore(name)
 
                 -- Check whether an editing pane exists
                 local has_editor = false
