@@ -49,6 +49,17 @@ require("lazy").setup({
 vim.opt.number = true
 vim.opt.relativenumber = true
 
+-- Enable inlay hints automatically for Rust
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+        if vim.bo[args.buf].filetype == "rust" then
+            vim.lsp.inlay_hint.enable(true, {
+                bufnr = args.buf,
+            })
+        end
+    end,
+})
+
 -- Use spaces instead of tabs; indent by 4 spaces
 vim.opt.expandtab = true
 vim.opt.tabstop = 4

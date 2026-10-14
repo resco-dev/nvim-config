@@ -45,8 +45,8 @@ elseif os == 'OSX' then
   map('n', '<D-Down>', ':bp!<CR>', noremap) -- previous buffer
 
   -- Move lines and blocks via move plugin
-  map('n', '<D-j>', ':MoveLine(1)<CR>', noremap)
-  map('n', '<D-k>', ':MoveLine(-1)<CR>', noremap)
+  map('n', '<leader>j>', ':MoveLine(1)<CR>', noremap)
+  map('n', '<leader>k>', ':MoveLine(-1)<CR>', noremap)
   map('v', '<D-j>', ':MoveBlock(1)<CR>', noremap)
   map('v', '<D-k>', ':MoveBlock(-1)<CR>', noremap)
   map('n', '<D-l>', ':MoveHChar(1)<CR>', noremap)
