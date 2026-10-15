@@ -23,7 +23,10 @@ return {
             close_windows = false,
             delete_hidden_buffers = false,
             delete_buffers = false,
+            nvim_tree = false,
         },
+
+
 
         hooks = {
             before_load = function(_, user_data)
@@ -62,6 +65,48 @@ return {
                 end
 
                 return user_data or {}
+            end,
+
+            after_load = function(session_name)
+                -- Only handle sessions belonging to a workspace
+                local name = session_name:match("^workspace%-(.+)$")
+
+                if not name then
+                    return
+                end
+
+                vim.schedule(function()
+                    -- Don't restore an outdated session
+                    if require("possession.session").get_session_name()
+                        ~= session_name then
+                        return
+                    end
+
+                    local tree = require("nvim-tree.api").tree
+                    local path = vim.fn.getcwd()
+
+                    -- Find the registered workspace directory
+                    for _, workspace in ipairs(require("workspaces").get()) do
+                        if workspace.name == name then
+                            path = workspace.path
+                            break
+                        end
+                    end
+
+                    -- Open the tree without stealing focus
+                    if not tree.is_visible() then
+                        tree.toggle({
+                            path = path,
+                            focus = false,
+                        })
+                    end
+
+                    -- Restore the workspace's tree root and state
+                    if tree.is_visible() then
+                        tree.change_root(path)
+                        require("tree_state").restore(name)
+                    end
+                end)
             end,
         },
     },

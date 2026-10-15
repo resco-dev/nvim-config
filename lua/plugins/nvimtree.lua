@@ -5,40 +5,50 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     opts = {
-      sort = {
-        sorter = "case_sensitive",
-      },
-      view = {
-        width = 30,
-      },
-      sync_root_with_cwd = true,
-      actions = {
-          change_dir = {
+        view = {
+            width = 30,
+            preserve_window_proportions = true,
+        },
+
+        actions = {
+            open_file = {
+                resize_window = false,
+            },
+        },
+        sort = {
+            sorter = "case_sensitive",
+        },
+        view = {
+            width = 30,
+        },
+        sync_root_with_cwd = false,
+        actions = {
+            change_dir = {
               enable = true,
               global = true,
-          },
-      },
-      renderer = {
-        group_empty = true,
-      },
-      filters = {
-        dotfiles = true,
-      },
-      on_attach = function(bufnr)
-        local api = require("nvim-tree.api")
+            },
+        },
+        renderer = {
+            group_empty = true,
+        },
+        filters = {
+            dotfiles = true,
+        },
+        on_attach = function(bufnr)
+            local api = require("nvim-tree.api")
 
-        api.map.on_attach.default(bufnr)
+            api.map.on_attach.default(bufnr)
 
-        vim.keymap.set("n", "<Tab>", function()
+            vim.keymap.set("n", "<Tab>", function()
             api.node.open.no_window_picker()
             api.tree.open()
-        end, {
-            buffer = bufnr,
-            desc = "Open file and stay in tree",
-            silent = true,
-        })
-    end,
-    },
+            end, {
+                buffer = bufnr,
+                desc = "Open file and stay in tree",
+                silent = true,
+            })
+        end,
+        },
     init = function()
         -- Save expanded folders when exiting Neovim
         vim.api.nvim_create_autocmd("VimLeavePre", {
@@ -57,21 +67,22 @@ return {
 
                 vim.schedule(function()
                     local tree = require("nvim-tree.api").tree
-                    local state = require("tree_state")
 
+                    -- Possession handles startup for workspace sessions
+                    local session_name =
+                        require("possession.session").get_session_name()
+
+                    if session_name
+                        and session_name:match("^workspace%-") then
+                        return
+                    end
+
+                    -- Normal startup without a workspace session
                     if not tree.is_visible() then
                         tree.toggle({
                             path = vim.fn.getcwd(),
                             focus = false,
                         })
-                    end
-
-                    -- Restore the current workspace's tree
-                    local name = state.current_workspace()
-
-                    if name and tree.is_visible() then
-                        tree.change_root(vim.fn.getcwd())
-                        state.restore(name)
                     end
                 end)
             end,

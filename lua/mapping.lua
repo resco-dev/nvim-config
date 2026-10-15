@@ -66,9 +66,7 @@ map('n', '<leader>o', '<cmd>NvimTreeToggle<cr>', { desc = "NvimTree" }) -- toggl
 map('n', '<leader>a', '<cmd>AerialToggle<cr>', { desc = "Aerial" }) -- toggle Aerial
 
 -- Launch terminal & shortcuts---
--- Rebind doubletab esp to exist terminal typing
-vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { noremap = true, silent = true, })
-
+vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { noremap = true, silent = true, })--Doubletab esp exit terminal
 
 local terminal_buf = nil
 local terminal_win = nil
@@ -129,7 +127,6 @@ map('n', "<leader>h", "<cmd>NvimTreeFocus<cr>", { desc = "Focus file tree", sile
 map("v", "p", '"_dP', { desc = "Paste without yanking" }) -- Paste over currently selected text without yanking it
 map('n', '<leader>p', '<cmd>pu<CR>', { desc = "Paste in next line" }) -- paste line below current text
 
-
 -- Center search results
 map("n", "n", "nzz", noremap)
 map("n", "N", "Nzz", noremap)
@@ -140,6 +137,61 @@ map("v", ">", ">gv", noremap) -- ""
 
 -- Diagnostics
 -- see lsp.lua
+
+
+-- Markdown
+
+-- Toggle Markdown anti-conceal for the current buffer
+map("n", "<leader>mt", function()
+    local buf = vim.api.nvim_get_current_buf()
+    local render = require("render-markdown")
+    local config = require("render-markdown.state").get(buf)
+
+    config.anti_conceal.enabled =
+        not config.anti_conceal.enabled
+
+    render.render({ buf = buf })
+end, {
+    desc = "Markdown: Toggle anti-conceal",
+    silent = true,
+})
+-- Follow the first Markdown link on the current line
+
+map("n", "<leader>mx", function()
+    local line = vim.api.nvim_get_current_line()
+    local first = nil
+
+    -- Supported Markdown link patterns
+    local patterns = {
+        "%b[]%b()",          -- [Name](url)
+        "%b[]%b[]",          -- [Name][reference]
+        "<https?://[^>]+>",  -- <https://example.com>
+    }
+
+    -- Find the earliest link on the line
+    for _, pattern in ipairs(patterns) do
+        local start = line:find(pattern)
+
+        if start and (not first or start < first) then
+            first = start
+        end
+    end
+
+    if not first then
+        vim.notify("No Markdown link found on this line")
+        return
+    end
+
+    -- Position cursor inside the first link
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    vim.api.nvim_win_set_cursor(0, { row, first })
+
+    -- Follow using the existing Markdown links plugin
+    require("follow-md-links").follow_link()
+end, {
+    desc = "Markdown: Follow first link on line",
+    silent = true,
+})
 
 -- Telescope
 map('n', '<leader>ff', '<cmd>Telescope find_files<cr>', { desc = "Telescope Find Files" })
@@ -156,6 +208,7 @@ map('n', '<leader>fs', '<cmd>Telescope possession list<cr>', { desc = "Telescope
 -- Workspaces
 map('n', '<leader>wv', '<cmd>WorkspacesOpen nvim<CR>', { desc = "Nvim config" })
 map('n', '<leader>wr', '<cmd>WorkspacesOpen Rust<CR>', { desc = "Rust folder" })
+map('n', '<leader>wi', '<cmd>WorkspacesOpen intune_app<CR>', { desc = "Intune app folder" })
 map('n', '<leader>wn', '<cmd>WorkspacesOpen notes<CR>', { desc = "Notes folder"})
 map('n', '<leader>?', '<cmd>Cheatsheet<cr>', { desc = "Cheatsheet" })
 map("n", "<leader>ws", function()

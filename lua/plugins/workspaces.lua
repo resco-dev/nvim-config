@@ -13,15 +13,16 @@ return {
                 local current = require("workspaces").name()
 
                 if current then
+                    -- Save current workspace expanded folders
+                    require("tree_state").save(current)
+
+                    -- Save current workspace editor layout and buffers
                     require("possession.session").save(
                         "workspace-" .. current,
                         { no_confirm = true }
                     )
-                    -- Remember current workspace expanded folders
-                    require("tree_state").save()
                 end
             end,
-
             -- Load the destination workspace
 
             open = function(name, path)

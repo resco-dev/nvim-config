@@ -44,6 +44,8 @@ require("lazy").setup({
 }, {
 	rocks = { enabled = false },
 })
+-- Add filename bar
+vim.opt.winbar = "  %t %m"
 
 -- Show line numbers and the current line's number
 vim.opt.number = true

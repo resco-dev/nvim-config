@@ -44,6 +44,7 @@ function M.current_workspace()
     return nil
 end
 
+
 -- Save expanded directories
 function M.save(name)
     name = name or M.current_workspace()
@@ -52,21 +53,33 @@ function M.save(name)
         return
     end
 
+    local root = api.tree.get_nodes()
+
+    if not root or not root.nodes then
+        return
+    end
+
     local expanded = {}
 
     local function collect(nodes)
         for _, node in ipairs(nodes or {}) do
-            if node.open then
+            if node.open == true then
                 table.insert(expanded, node.absolute_path)
                 collect(node.nodes)
             end
         end
     end
 
-    collect(api.tree.get_nodes())
+    -- get_nodes() returns a root object, not an array
+    collect(root.nodes)
 
     local state = read_state()
-    state[name] = expanded
+    local win = api.tree.winid()
+
+    state[name] = {
+        expanded = expanded,
+        width = win and vim.api.nvim_win_get_width(win) or nil,
+    }
 
     vim.fn.writefile({
         vim.json.encode(state),
@@ -81,7 +94,13 @@ function M.restore(name)
         return
     end
 
-    local expanded = read_state()[name]
+    local saved = read_state()[name]
+
+    if type(saved) ~= "table" then
+        return
+    end
+
+    local expanded = saved.expanded or saved
 
     if type(expanded) ~= "table" then
         return
@@ -90,16 +109,24 @@ function M.restore(name)
     local wanted = {}
 
     for _, path in ipairs(expanded) do
-        wanted[path] = true
+        wanted[normalize(path)] = true
     end
 
+    -- Collapse everything first
     api.tree.collapse_all()
 
+    -- Expand only previously opened directories
     api.tree.expand_all(nil, {
         expand_until = function(_, node)
-            return wanted[node.absolute_path] == true
+            return wanted[normalize(node.absolute_path)] == true
         end,
     })
+    -- Restore the workspace's saved tree width
+    if type(saved.width) == "number" then
+        api.tree.resize({
+            absolute = saved.width,
+        })
+    end
 end
 
 return M
