@@ -98,13 +98,12 @@ local function toggle_terminal()
 end
 
 map("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal", })
-map("t", "<C-k>", [[<C-\><C-n><C-w>k]], { desc = "Terminal -> Editor", })
 map("n", "<leader>tj", "wincmd j", { desc = "Editor -> Terminal", })
 
 -- Resize tabs
-map('n', '<leader>+', ':vertical resize +5<cr>', { desc = "Vertical resize +5" }) -- increase VSplit
-map('n', '<leader>-', ':vertical resize -5<cr>', { desc = "Vertical resize -5" }) -- decrease VSplit
-map('n', '<leader>*', ':resize +5<cr>', { desc = "Resize +5" }) -- increase HSplit
+map('n', '<C>+', ':vertical resize +5<cr>', { desc = "Vertical resize +5" }) -- increase VSplit
+map('n', '<C>-', ':vertical resize -5<cr>', { desc = "Vertical resize -5" }) -- decrease VSplit
+map('n', '<C>*', ':resize +5<cr>', { desc = "Resize +5" }) -- increase HSplit
 map('n', '<leader>_', ':resize -5<cr>', { desc = "Resize -5" }) -- decrease HSplit
 
 -- Tabs
@@ -199,27 +198,41 @@ map('n', '<leader>fg', '<cmd>Telescope live_grep<cr>', { desc = "Telescope Grep"
 map('n', '<leader>fb', '<cmd>Telescope buffers<cr>', { desc = "Telescope Buffers" })
 map('n', '<leader>fo', '<cmd>Telescope oldfiles<cr>', { desc = "Telescope MRU" })
 map('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', { desc = "Telescope Help" })
-map('n', '<leader>fs', '<cmd>Telescope possession list<cr>', { desc = "Telescope Posession" })
+-- Function to search folders
+map("n", "<leader>fd", function()
+    local cwd = vim.fn.getcwd()
+    local folders = {}
+
+    for name, kind in vim.fs.dir(cwd, { depth = 100 }) do
+        if kind == "directory" then
+            folders[#folders + 1] = name
+        end
+    end
+
+    local actions = require("telescope.actions")
+    local action_state = require("telescope.actions.state")
+
+    require("telescope.pickers").new({}, {
+        prompt_title = "Folders",
+        finder = require("telescope.finders").new_table({ results = folders }),
+        sorter = require("telescope.config").values.generic_sorter({}),
+        attach_mappings = function(prompt_bufnr)
+            actions.select_default:replace(function()
+                local selected = action_state.get_selected_entry()
+                actions.close(prompt_bufnr)
+                if selected then
+                    require("nvim-tree.api").tree.change_root(
+                        vim.fs.joinpath(cwd, selected[1])
+                    )
+                end
+            end)
+            return true
+        end,
+    }):find()
+end, { desc = "Find folder for file tree" })
 
 -- Comment
 -- map('n', '<leader>-', '<Plug>(comment_toggle_linewise)', noremap)
-
-
--- Workspaces
-map('n', '<leader>wv', '<cmd>WorkspacesOpen nvim<CR>', { desc = "Nvim config" })
-map('n', '<leader>wr', '<cmd>WorkspacesOpen Rust<CR>', { desc = "Rust folder" })
-map('n', '<leader>wi', '<cmd>WorkspacesOpen intune_app<CR>', { desc = "Intune app folder" })
-map('n', '<leader>wn', '<cmd>WorkspacesOpen notes<CR>', { desc = "Notes folder"})
-map('n', '<leader>?', '<cmd>Cheatsheet<cr>', { desc = "Cheatsheet" })
-map("n", "<leader>ws", function()
-  local path = vim.fn.getcwd()
-
-  vim.ui.input({ prompt = "Workspace name: " }, function(name)
-    if name and name ~= "" then
-      require("workspaces").add(path, name)
-    end
-  end)
-end, { desc = "Save current workspace" })
 
 -- Yanky
 map("n", "p", "<Plug>(YankyPutAfter)", { desc = "Yanky put after" })
